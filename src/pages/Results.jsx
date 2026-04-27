@@ -12,16 +12,10 @@ export default function Results() {
   const location = useLocation();
   const state = location.state;
 
-  const openResource = (url) => {
-    if (!url) return;
-    window.open(url, "_blank", "noopener,noreferrer");
-  };
-
   if (!state) {
     return (
       <main className="page center">
         <h1>No Results Found</h1>
-        <p>Please complete a quiz first.</p>
         <Link to="/" className="primaryBtn">
           Back to Courses
         </Link>
@@ -31,18 +25,6 @@ export default function Results() {
 
   const { answers, score, totalQuestions, courseId, courseName } = state;
   const quiz = quizzes[courseId];
-
-  if (!quiz) {
-    return (
-      <main className="page center">
-        <h1>Result Error</h1>
-        <p>Quiz data was not found.</p>
-        <Link to="/" className="primaryBtn">
-          Back to Courses
-        </Link>
-      </main>
-    );
-  }
 
   const percentage = Math.round((score / totalQuestions) * 100);
 
@@ -86,6 +68,7 @@ export default function Results() {
         </Link>
       </section>
 
+      {/* REVIEW */}
       <section>
         <h2 className="sectionTitle">Review Your Answers</h2>
 
@@ -116,11 +99,6 @@ export default function Results() {
                     <p>
                       Your answer: <b>{question.options[userAnswer]}</b>
                     </p>
-
-                    {!isCorrect &&
-                      question.wrongChoiceExplanations?.[userAnswer] && (
-                        <p>{question.wrongChoiceExplanations[userAnswer]}</p>
-                      )}
                   </div>
 
                   {!isCorrect && (
@@ -129,16 +107,6 @@ export default function Results() {
                         Correct answer:{" "}
                         <b>{question.options[question.correctAnswer]}</b>
                       </p>
-
-                      {question.explanation && (
-                        <p>✓ {question.explanation}</p>
-                      )}
-                    </div>
-                  )}
-
-                  {isCorrect && question.explanation && (
-                    <div className="answerBox noteBox">
-                      <p>✓ {question.explanation}</p>
                     </div>
                   )}
                 </div>
@@ -148,6 +116,7 @@ export default function Results() {
         </div>
       </section>
 
+      {/* VIDEO SUGGESTIONS */}
       {recommendedVideos.length > 0 && (
         <section className="recommendBox">
           <div className="recommendTitle">
@@ -155,10 +124,7 @@ export default function Results() {
             <h2>Recommended Videos</h2>
           </div>
 
-          <p>
-            Based on your wrong answers, watch these videos to review the weak
-            topics.
-          </p>
+          <p>Review these topics you answered incorrectly.</p>
 
           <div className="resourceGrid">
             {recommendedVideos.map((resource) => (
@@ -166,25 +132,22 @@ export default function Results() {
                 <span className="topicBadge">VIDEO</span>
 
                 <h3>{resource.title}</h3>
-
                 <p>{resource.description}</p>
 
-                <span className="smallText">Topic: {resource.topic}</span>
-
-                <br />
-
-                <button
+                <a
+                  href={resource.fileUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="linkBtn"
-                  onClick={() => openResource(resource.fileUrl)}
                 >
-                  Open Video →
-                </button>
+                  Watch Video →
+                </a>
               </div>
             ))}
           </div>
 
           <Link to="/resources" state={{ courseId }} className="primaryBtn">
-            View PDF Resources <ArrowRight size={16} />
+            View PDFs <ArrowRight size={16} />
           </Link>
         </section>
       )}

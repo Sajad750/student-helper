@@ -11,16 +11,12 @@ export default function Resources() {
   const [selectedType, setSelectedType] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
 
-  const openResource = (url) => {
-    if (!url) return;
-    window.open(url, "_blank", "noopener,noreferrer");
-  };
-
   const filteredResources = resources.filter((resource) => {
     const matchCourse =
       selectedCourse === "all" || resource.courseId === selectedCourse;
 
-    const matchType = selectedType === "all" || resource.type === selectedType;
+    const matchType =
+      selectedType === "all" || resource.type === selectedType;
 
     const matchSearch =
       searchQuery === "" ||
@@ -42,8 +38,7 @@ export default function Resources() {
       <div className="hero">
         <h1>Learning Resources</h1>
         <p>
-          Explore curated study materials to strengthen your knowledge and
-          master difficult topics.
+          Explore study materials to improve your weak topics and understand better.
         </p>
       </div>
 
@@ -111,20 +106,14 @@ export default function Resources() {
               <div className="resourceBottom">
                 <span className="topicBadge">{resource.topic}</span>
 
-                {resource.fileUrl ? (
-                  <button
-                    className="linkBtn"
-                    onClick={() => openResource(resource.fileUrl)}
-                  >
-                    {resource.type === "pdf"
-                      ? "Open PDF"
-                      : resource.type === "video"
-                      ? "Open Video"
-                      : "Open"}
-                  </button>
-                ) : (
-                  <span className="smallText">Notes</span>
-                )}
+                <a
+                  href={resource.fileUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="linkBtn"
+                >
+                  {resource.type === "pdf" ? "Open PDF" : "Open Video"}
+                </a>
               </div>
             </div>
           ))}
