@@ -78,7 +78,7 @@ export default function Resources() {
         </div>
 
         <div className="filterButtons">
-          {["all", "pdf", "video", "notes"].map((type) => (
+          {["all", "pdf", "video"].map((type) => (
             <button
               key={type}
               className={selectedType === type ? "activeDark" : ""}
