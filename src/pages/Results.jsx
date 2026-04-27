@@ -1,10 +1,21 @@
 import { useLocation, Link } from "react-router-dom";
-import { Trophy, CheckCircle2, XCircle, BookOpen, ArrowRight } from "lucide-react";
+import {
+  Trophy,
+  CheckCircle2,
+  XCircle,
+  BookOpen,
+  ArrowRight,
+} from "lucide-react";
 import { quizzes, resources } from "../data/courses";
 
 export default function Results() {
   const location = useLocation();
   const state = location.state;
+
+  const openResource = (url) => {
+    if (!url) return;
+    window.open(encodeURI(url), "_blank");
+  };
 
   if (!state) {
     return (
@@ -39,24 +50,14 @@ export default function Results() {
     .filter((q) => answers[q.id] !== q.correctAnswer)
     .map((q) => q.topic);
 
-  let recommendedResources = resources.filter(
-    (r) => r.courseId === courseId && wrongTopics.includes(r.topic)
-  );
+  const uniqueWrongTopics = [...new Set(wrongTopics)];
 
-  const combinedResources = resources.filter(
+  const recommendedVideos = resources.filter(
     (r) =>
       r.courseId === courseId &&
-      r.combinedTopics &&
-      r.combinedTopics.some((topic) => wrongTopics.includes(topic)) &&
-      r.combinedTopics.filter((topic) => wrongTopics.includes(topic)).length >= 2
+      r.type === "video" &&
+      uniqueWrongTopics.includes(r.topic)
   );
-
-  if (combinedResources.length > 0) {
-    recommendedResources = [
-      ...combinedResources.filter((r) => r.isPriority),
-      ...recommendedResources,
-    ];
-  }
 
   const message =
     percentage >= 80
@@ -69,6 +70,7 @@ export default function Results() {
     <main className="resultsPage">
       <section className="scoreCard">
         <Trophy size={80} />
+
         <h1>{message}</h1>
 
         <div className="score">
@@ -101,12 +103,18 @@ export default function Results() {
 
                 <div>
                   <span className="smallText">Question {index + 1}</span>
+
                   <h3>{question.question}</h3>
 
-                  <div className={isCorrect ? "answerBox correctBox" : "answerBox wrongBox"}>
+                  <div
+                    className={
+                      isCorrect
+                        ? "answerBox correctBox"
+                        : "answerBox wrongBox"
+                    }
+                  >
                     <p>
-                      Your answer:{" "}
-                      <b>{question.options[userAnswer]}</b>
+                      Your answer: <b>{question.options[userAnswer]}</b>
                     </p>
 
                     {!isCorrect &&
@@ -121,7 +129,10 @@ export default function Results() {
                         Correct answer:{" "}
                         <b>{question.options[question.correctAnswer]}</b>
                       </p>
-                      <p>✓ {question.explanation}</p>
+
+                      {question.explanation && (
+                        <p>✓ {question.explanation}</p>
+                      )}
                     </div>
                   )}
 
@@ -137,53 +148,43 @@ export default function Results() {
         </div>
       </section>
 
-      {recommendedResources.length > 0 && (
+      {recommendedVideos.length > 0 && (
         <section className="recommendBox">
           <div className="recommendTitle">
             <BookOpen />
-            <h2>Improve Your Understanding</h2>
+            <h2>Recommended Videos</h2>
           </div>
 
           <p>
-            Based on your quiz results, we recommend reviewing these topics.
+            Based on your wrong answers, watch these videos to review the weak
+            topics.
           </p>
 
           <div className="resourceGrid">
-            {recommendedResources.map((resource) => (
+            {recommendedVideos.map((resource) => (
               <div key={resource.id} className="resourceCard">
-                <span className="topicBadge">{resource.type.toUpperCase()}</span>
-
-                {resource.isPriority && (
-                  <span className="recommendedBadge">RECOMMENDED</span>
-                )}
+                <span className="topicBadge">VIDEO</span>
 
                 <h3>{resource.title}</h3>
+
                 <p>{resource.description}</p>
 
-                <span className="smallText">
-                  {resource.combinedTopics
-                    ? `Covers: ${resource.combinedTopics.join(", ")}`
-                    : `Topic: ${resource.topic}`}
-                </span>
+                <span className="smallText">Topic: {resource.topic}</span>
 
-                {resource.fileUrl ? (
-                  <button
-                    className="linkBtn"
-                    onClick={() => window.open(resource.fileUrl, "_blank")}
-                  >
-                    Open Resource →
-                  </button>
-                ) : (
-                  <span className="smallText">
-                    {resource.type === "video" ? "Video Resource" : "Study Notes"}
-                  </span>
-                )}
+                <br />
+
+                <button
+                  className="linkBtn"
+                  onClick={() => openResource(resource.fileUrl)}
+                >
+                  Open Video →
+                </button>
               </div>
             ))}
           </div>
 
           <Link to="/resources" state={{ courseId }} className="primaryBtn">
-            View All Study Materials <ArrowRight size={16} />
+            View PDF Resources <ArrowRight size={16} />
           </Link>
         </section>
       )}

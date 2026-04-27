@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useLocation } from "react-router-dom";
 import { FileText, Video, BookOpen, Search } from "lucide-react";
-import { motion } from "framer-motion";
 import { courses, resources } from "../data/courses";
 
 export default function Resources() {
@@ -11,6 +10,11 @@ export default function Resources() {
   const [selectedCourse, setSelectedCourse] = useState(state?.courseId || "all");
   const [selectedType, setSelectedType] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
+
+  const openResource = (url) => {
+    if (!url) return;
+    window.open(encodeURI(url), "_blank");
+  };
 
   const filteredResources = resources.filter((resource) => {
     const matchCourse =
@@ -36,16 +40,13 @@ export default function Resources() {
 
   return (
     <main className="page">
-      <motion.div
-        className="hero"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-      >
+      <div className="hero">
         <h1>Learning Resources</h1>
         <p>
-          Explore PDFs, videos, and notes to strengthen your weak topics.
+          Explore curated study materials to strengthen your knowledge and
+          master difficult topics.
         </p>
-      </motion.div>
+      </div>
 
       <div className="filters">
         <div className="searchBox">
@@ -78,48 +79,58 @@ export default function Resources() {
         </div>
 
         <div className="filterButtons">
-          {["all", "pdf", "video", "notes"].map((type) => (
+          {["all", "pdf", "video"].map((type) => (
             <button
               key={type}
               className={selectedType === type ? "activeDark" : ""}
               onClick={() => setSelectedType(type)}
             >
-              {type}
+              {type === "all" ? "All Types" : type}
             </button>
           ))}
         </div>
       </div>
 
-      <div className="resourceGrid">
-        {filteredResources.map((resource) => (
-          <div key={resource.id} className="resourceCard">
-            <div className="resourceTop">
-              <div className="resourceIcon">{getIcon(resource.type)}</div>
-              <span>
-                {courses.find((c) => c.id === resource.courseId)?.name}
-              </span>
+      {filteredResources.length === 0 ? (
+        <div className="center">
+          <p>No resources found.</p>
+        </div>
+      ) : (
+        <div className="resourceGrid">
+          {filteredResources.map((resource) => (
+            <div key={resource.id} className="resourceCard">
+              <div className="resourceTop">
+                <div className="resourceIcon">{getIcon(resource.type)}</div>
+                <span>
+                  {courses.find((c) => c.id === resource.courseId)?.name}
+                </span>
+              </div>
+
+              <h3>{resource.title}</h3>
+              <p>{resource.description}</p>
+
+              <div className="resourceBottom">
+                <span className="topicBadge">{resource.topic}</span>
+
+                {resource.fileUrl ? (
+                  <button
+                    className="linkBtn"
+                    onClick={() => openResource(resource.fileUrl)}
+                  >
+                    {resource.type === "pdf"
+                      ? "Open PDF"
+                      : resource.type === "video"
+                      ? "Open Video"
+                      : "Open"}
+                  </button>
+                ) : (
+                  <span className="smallText">Notes</span>
+                )}
+              </div>
             </div>
-
-            <h3>{resource.title}</h3>
-            <p>{resource.description}</p>
-
-            <div className="resourceBottom">
-              <span className="topicBadge">{resource.topic}</span>
-
-              {resource.fileUrl ? (
-                <button
-                  className="linkBtn"
-                  onClick={() => window.open(resource.fileUrl, "_blank")}
-                >
-                  Open
-                </button>
-              ) : (
-                <span className="smallText">Notes</span>
-              )}
-            </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
     </main>
   );
 }

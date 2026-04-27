@@ -605,3 +605,54 @@ button:disabled {
   width: 22px;
   border-radius: 999px;
 }
+@media (max-width: 700px) {
+  .navbar {
+    padding: 0 18px;
+  }
+
+  .quizPage,
+  .page,
+  .resultsPage {
+    width: 100%;
+    max-width: 100%;
+    padding: 28px 14px;
+  }
+
+  .questionCard {
+    padding: 22px 16px;
+  }
+
+  .questionCard h1 {
+    font-size: 24px;
+    line-height: 1.3;
+  }
+
+  .optionButton {
+    width: 100%;
+    font-size: 15px;
+    padding: 14px;
+  }
+
+  .quizButtons {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .questionNav {
+    order: -1;
+    flex-wrap: wrap;
+    max-width: 100%;
+  }
+
+  .primaryBtn,
+  .secondaryBtn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .resourceGrid {
+    grid-template-columns: 1fr;
+  }
+}
