@@ -14,7 +14,7 @@ export default function Results() {
 
   const openResource = (url) => {
     if (!url) return;
-    window.open(encodeURI(url), "_blank");
+    window.open(url, "_blank", "noopener,noreferrer");
   };
 
   if (!state) {

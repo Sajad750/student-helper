@@ -13,15 +13,14 @@ export default function Resources() {
 
   const openResource = (url) => {
     if (!url) return;
-    window.open(encodeURI(url), "_blank");
+    window.open(url, "_blank", "noopener,noreferrer");
   };
 
   const filteredResources = resources.filter((resource) => {
     const matchCourse =
       selectedCourse === "all" || resource.courseId === selectedCourse;
 
-    const matchType =
-      selectedType === "all" || resource.type === selectedType;
+    const matchType = selectedType === "all" || resource.type === selectedType;
 
     const matchSearch =
       searchQuery === "" ||
@@ -79,7 +78,7 @@ export default function Resources() {
         </div>
 
         <div className="filterButtons">
-          {["all", "pdf", "video"].map((type) => (
+          {["all", "pdf", "video", "notes"].map((type) => (
             <button
               key={type}
               className={selectedType === type ? "activeDark" : ""}
